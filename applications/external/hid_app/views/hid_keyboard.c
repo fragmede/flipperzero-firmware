@@ -146,12 +146,12 @@ const HidKeyboardKey hid_keyboard_keyset[ROW_COUNT][COLUMN_COUNT] = {
         {.width = 3, .icon = NULL, .key = "Alt", .value = HID_KEYBOARD_L_ALT},
         {.width = 0, .icon = NULL, .value = HID_KEYBOARD_L_ALT},
         {.width = 0, .icon = NULL, .value = HID_KEYBOARD_L_ALT},
-        {.width = 3, .icon = NULL, .key = "Cmd", .value = HID_KEYBOARD_L_GUI},
+        {.width = 2, .icon = NULL, .key = "Cmd", .value = HID_KEYBOARD_L_GUI},
         {.width = 0, .icon = NULL, .value = HID_KEYBOARD_L_GUI},
-        {.width = 0, .icon = NULL, .value = HID_KEYBOARD_L_GUI},
-        {.width = 3, .icon = NULL, .key = "Tab", .value = HID_KEYBOARD_TAB},
+        {.width = 2, .icon = NULL, .key = "Tab", .value = HID_KEYBOARD_TAB},
         {.width = 0, .icon = NULL, .value = HID_KEYBOARD_TAB},
-        {.width = 0, .icon = NULL, .value = HID_KEYBOARD_TAB},
+        {.width = 2, .icon = NULL, .key = "ESC", .value = HID_KEYBOARD_ESCAPE},
+        {.width = 0, .icon = NULL, .value = HID_KEYBOARD_ESCAPE},
     },
 };
 
