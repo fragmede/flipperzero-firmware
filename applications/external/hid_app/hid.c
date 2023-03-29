@@ -10,6 +10,7 @@ enum HidDebugSubmenuIndex {
     HidSubmenuIndexKeyboard,
     HidSubmenuIndexMedia,
     HidSubmenuIndexTikTok,
+    HidSubmenuIndexIphone,
     HidSubmenuIndexMouse,
     HidSubmenuIndexMouseJiggler,
 };
@@ -32,6 +33,9 @@ static void hid_submenu_callback(void* context, uint32_t index) {
     } else if(index == HidSubmenuIndexTikTok) {
         app->view_id = BtHidViewTikTok;
         view_dispatcher_switch_to_view(app->view_dispatcher, BtHidViewTikTok);
+    } else if(index == HidSubmenuIndexIphone) {
+        app->view_id = BtHidViewIphone;
+        view_dispatcher_switch_to_view(app->view_dispatcher, BtHidViewIphone);
     } else if(index == HidSubmenuIndexMouseJiggler) {
         app->view_id = HidViewMouseJiggler;
         view_dispatcher_switch_to_view(app->view_dispatcher, HidViewMouseJiggler);
@@ -113,6 +117,12 @@ Hid* hid_alloc(HidTransport transport) {
             HidSubmenuIndexTikTok,
             hid_submenu_callback,
             app);
+        submenu_add_item(
+            app->device_type_submenu,
+            "Iphone controller",
+            HidSubmenuIndexIphone,
+            hid_submenu_callback,
+            app);
     }
     submenu_add_item(
         app->device_type_submenu,
@@ -165,6 +175,12 @@ Hid* hid_app_alloc_view(void* context) {
     view_set_previous_callback(hid_tiktok_get_view(app->hid_tiktok), hid_exit_confirm_view);
     view_dispatcher_add_view(
         app->view_dispatcher, BtHidViewTikTok, hid_tiktok_get_view(app->hid_tiktok));
+
+    // Iphone view
+    app->hid_iphone = hid_iphone_alloc(app);
+    view_set_previous_callback(hid_iphone_get_view(app->hid_iphone), hid_exit_confirm_view);
+    view_dispatcher_add_view(
+        app->view_dispatcher, BtHidViewIphone, hid_iphone_get_view(app->hid_iphone));
 
     // Mouse view
     app->hid_mouse = hid_mouse_alloc(app);

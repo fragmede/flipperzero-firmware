@@ -142,7 +142,6 @@ const HidKeyboardKey hid_keyboard_keyset[ROW_COUNT][COLUMN_COUNT] = {
     {
         {.width = 3, .icon = NULL, .key = "Ctrl", .value = HID_KEYBOARD_L_CTRL},
         {.width = 0, .icon = NULL, .value = HID_KEYBOARD_L_CTRL},
-        {.width = 0, .icon = NULL, .value = HID_KEYBOARD_L_CTRL},
         {.width = 3, .icon = NULL, .key = "Alt", .value = HID_KEYBOARD_L_ALT},
         {.width = 0, .icon = NULL, .value = HID_KEYBOARD_L_ALT},
         {.width = 0, .icon = NULL, .value = HID_KEYBOARD_L_ALT},
