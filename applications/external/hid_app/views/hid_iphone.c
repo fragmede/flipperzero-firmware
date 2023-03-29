@@ -1,4 +1,4 @@
-#include "hid_Iphone.h"
+#include "hid_iphone.h"
 #include "../hid.h"
 #include <gui/elements.h>
 
@@ -22,7 +22,7 @@ typedef struct {
     HidTransport transport;
 } HidIphoneModel;
 
-static void hid_Iphone_draw_callback(Canvas* canvas, void* context) {
+static void hid_iphone_draw_callback(Canvas* canvas, void* context) {
     furi_assert(context);
     HidIphoneModel* model = context;
 
@@ -94,104 +94,104 @@ static void hid_Iphone_draw_callback(Canvas* canvas, void* context) {
     elements_multiline_text_aligned(canvas, 13, 62, AlignLeft, AlignBottom, "Hold to exit");
 }
 
-static void hid_Iphone_reset_cursor(HidIphone* hid_Iphone) {
+static void hid_iphone_reset_cursor(HidIphone* hid_iphone) {
     // Set cursor to the phone's left up corner
     // Delays to guarantee one packet per connection interval
     for(size_t i = 0; i < 8; i++) {
-        hid_hal_mouse_move(hid_Iphone->hid, -127, -127);
+        hid_hal_mouse_move(hid_iphone->hid, -127, -127);
         furi_delay_ms(50);
     }
     // Move cursor from the corner
-    hid_hal_mouse_move(hid_Iphone->hid, 20, 120);
+    hid_hal_mouse_move(hid_iphone->hid, 20, 120);
     furi_delay_ms(50);
 }
 
 static void
-    hid_Iphone_process_press(HidIphone* hid_Iphone, HidIphoneModel* model, InputEvent* event) {
+    hid_iphone_process_press(HidIphone* hid_iphone, HidIphoneModel* model, InputEvent* event) {
     if(event->key == InputKeyUp) {
         model->up_pressed = true;
     } else if(event->key == InputKeyDown) {
         model->down_pressed = true;
     } else if(event->key == InputKeyLeft) {
         model->left_pressed = true;
-        hid_hal_consumer_key_press(hid_Iphone->hid, (1 << 20) & HID_KEYBOARD_H);
+        hid_hal_consumer_key_press(hid_iphone->hid, (1 << 20) & HID_KEYBOARD_H);
     } else if(event->key == InputKeyRight) {
         model->right_pressed = true;
-        hid_hal_consumer_key_press(hid_Iphone->hid, HID_CONSUMER_VOLUME_INCREMENT);
+        hid_hal_consumer_key_press(hid_iphone->hid, HID_CONSUMER_VOLUME_INCREMENT);
     } else if(event->key == InputKeyOk) {
         model->ok_pressed = true;
     }
 }
 
 static void
-    hid_Iphone_process_release(HidIphone* hid_Iphone, HidIphoneModel* model, InputEvent* event) {
+    hid_iphone_process_release(HidIphone* hid_iphone, HidIphoneModel* model, InputEvent* event) {
     if(event->key == InputKeyUp) {
         model->up_pressed = false;
     } else if(event->key == InputKeyDown) {
         model->down_pressed = false;
     } else if(event->key == InputKeyLeft) {
         model->left_pressed = false;
-        hid_hal_consumer_key_press(hid_Iphone->hid, (1 << 20) & HID_KEYBOARD_H);
+        hid_hal_consumer_key_press(hid_iphone->hid, (1 << 20) & HID_KEYBOARD_H);
     } else if(event->key == InputKeyRight) {
         model->right_pressed = false;
-        hid_hal_consumer_key_release(hid_Iphone->hid, HID_CONSUMER_VOLUME_INCREMENT);
+        hid_hal_consumer_key_release(hid_iphone->hid, HID_CONSUMER_VOLUME_INCREMENT);
     } else if(event->key == InputKeyOk) {
         model->ok_pressed = false;
     }
 }
 
-static bool hid_Iphone_input_callback(InputEvent* event, void* context) {
+static bool hid_iphone_input_callback(InputEvent* event, void* context) {
     furi_assert(context);
-    HidIphone* hid_Iphone = context;
+    HidIphone* hid_iphone = context;
     bool consumed = false;
 
     with_view_model(
-        hid_Iphone->view,
+        hid_iphone->view,
         HidIphoneModel * model,
         {
             if(event->type == InputTypePress) {
-                hid_Iphone_process_press(hid_Iphone, model, event);
+                hid_iphone_process_press(hid_iphone, model, event);
                 if(model->connected && !model->is_cursor_set) {
-                    hid_Iphone_reset_cursor(hid_Iphone);
+                    hid_iphone_reset_cursor(hid_iphone);
                     model->is_cursor_set = true;
                 }
                 consumed = true;
             } else if(event->type == InputTypeRelease) {
-                hid_Iphone_process_release(hid_Iphone, model, event);
+                hid_iphone_process_release(hid_iphone, model, event);
                 consumed = true;
             } else if(event->type == InputTypeShort) {
                 if(event->key == InputKeyOk) {
-                    hid_hal_mouse_press(hid_Iphone->hid, HID_MOUSE_BTN_LEFT);
+                    hid_hal_mouse_press(hid_iphone->hid, HID_MOUSE_BTN_LEFT);
                     furi_delay_ms(50);
-                    hid_hal_mouse_release(hid_Iphone->hid, HID_MOUSE_BTN_LEFT);
+                    hid_hal_mouse_release(hid_iphone->hid, HID_MOUSE_BTN_LEFT);
                     furi_delay_ms(50);
-                    hid_hal_mouse_press(hid_Iphone->hid, HID_MOUSE_BTN_LEFT);
+                    hid_hal_mouse_press(hid_iphone->hid, HID_MOUSE_BTN_LEFT);
                     furi_delay_ms(50);
-                    hid_hal_mouse_release(hid_Iphone->hid, HID_MOUSE_BTN_LEFT);
+                    hid_hal_mouse_release(hid_iphone->hid, HID_MOUSE_BTN_LEFT);
                     consumed = true;
                 } else if(event->key == InputKeyUp) {
                     // Emulate up swipe
-                    hid_hal_mouse_scroll(hid_Iphone->hid, -6);
-                    hid_hal_mouse_scroll(hid_Iphone->hid, -12);
-                    hid_hal_mouse_scroll(hid_Iphone->hid, -19);
-                    hid_hal_mouse_scroll(hid_Iphone->hid, -12);
-                    hid_hal_mouse_scroll(hid_Iphone->hid, -6);
+                    hid_hal_mouse_scroll(hid_iphone->hid, -6);
+                    hid_hal_mouse_scroll(hid_iphone->hid, -12);
+                    hid_hal_mouse_scroll(hid_iphone->hid, -19);
+                    hid_hal_mouse_scroll(hid_iphone->hid, -12);
+                    hid_hal_mouse_scroll(hid_iphone->hid, -6);
                     consumed = true;
                 } else if(event->key == InputKeyDown) {
                     // Emulate down swipe
-                    hid_hal_mouse_scroll(hid_Iphone->hid, 6);
-                    hid_hal_mouse_scroll(hid_Iphone->hid, 12);
-                    hid_hal_mouse_scroll(hid_Iphone->hid, 19);
-                    hid_hal_mouse_scroll(hid_Iphone->hid, 12);
-                    hid_hal_mouse_scroll(hid_Iphone->hid, 6);
+                    hid_hal_mouse_scroll(hid_iphone->hid, 6);
+                    hid_hal_mouse_scroll(hid_iphone->hid, 12);
+                    hid_hal_mouse_scroll(hid_iphone->hid, 19);
+                    hid_hal_mouse_scroll(hid_iphone->hid, 12);
+                    hid_hal_mouse_scroll(hid_iphone->hid, 6);
                     consumed = true;
                 } else if(event->key == InputKeyBack) {
-                    hid_hal_consumer_key_release_all(hid_Iphone->hid);
+                    hid_hal_consumer_key_release_all(hid_iphone->hid);
                     consumed = true;
                 }
             } else if(event->type == InputTypeLong) {
                 if(event->key == InputKeyBack) {
-                    hid_hal_consumer_key_release_all(hid_Iphone->hid);
+                    hid_hal_consumer_key_release_all(hid_iphone->hid);
                     model->is_cursor_set = false;
                     consumed = false;
                 }
@@ -202,36 +202,36 @@ static bool hid_Iphone_input_callback(InputEvent* event, void* context) {
     return consumed;
 }
 
-HidIphone* hid_Iphone_alloc(Hid* bt_hid) {
-    HidIphone* hid_Iphone = malloc(sizeof(HidIphone));
-    hid_Iphone->hid = bt_hid;
-    hid_Iphone->view = view_alloc();
-    view_set_context(hid_Iphone->view, hid_Iphone);
-    view_allocate_model(hid_Iphone->view, ViewModelTypeLocking, sizeof(HidIphoneModel));
-    view_set_draw_callback(hid_Iphone->view, hid_Iphone_draw_callback);
-    view_set_input_callback(hid_Iphone->view, hid_Iphone_input_callback);
+HidIphone* hid_iphone_alloc(Hid* bt_hid) {
+    HidIphone* hid_iphone = malloc(sizeof(HidIphone));
+    hid_iphone->hid = bt_hid;
+    hid_iphone->view = view_alloc();
+    view_set_context(hid_iphone->view, hid_iphone);
+    view_allocate_model(hid_iphone->view, ViewModelTypeLocking, sizeof(HidIphoneModel));
+    view_set_draw_callback(hid_iphone->view, hid_iphone_draw_callback);
+    view_set_input_callback(hid_iphone->view, hid_iphone_input_callback);
 
     with_view_model(
-        hid_Iphone->view, HidIphoneModel * model, { model->transport = bt_hid->transport; }, true);
+        hid_iphone->view, HidIphoneModel * model, { model->transport = bt_hid->transport; }, true);
 
-    return hid_Iphone;
+    return hid_iphone;
 }
 
-void hid_Iphone_free(HidIphone* hid_Iphone) {
-    furi_assert(hid_Iphone);
-    view_free(hid_Iphone->view);
-    free(hid_Iphone);
+void hid_iphone_free(HidIphone* hid_iphone) {
+    furi_assert(hid_iphone);
+    view_free(hid_iphone->view);
+    free(hid_iphone);
 }
 
-View* hid_Iphone_get_view(HidIphone* hid_Iphone) {
-    furi_assert(hid_Iphone);
-    return hid_Iphone->view;
+View* hid_iphone_get_view(HidIphone* hid_iphone) {
+    furi_assert(hid_iphone);
+    return hid_iphone->view;
 }
 
-void hid_Iphone_set_connected_status(HidIphone* hid_Iphone, bool connected) {
-    furi_assert(hid_Iphone);
+void hid_iphone_set_connected_status(HidIphone* hid_iphone, bool connected) {
+    furi_assert(hid_iphone);
     with_view_model(
-        hid_Iphone->view,
+        hid_iphone->view,
         HidIphoneModel * model,
         {
             model->connected = connected;
